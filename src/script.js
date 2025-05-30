@@ -1,4 +1,7 @@
 // init variables
+
+const navbar = document.querySelector("#navbar");
+
 const cards = {
     signIn: `
         <div class="card bg-white my-2 mx-6 p-2 rounded-lg flex flex-col justify-center items-center">
@@ -75,16 +78,6 @@ const cards = {
             </form>
         </div>
     `,
-    // gifts: `
-    //     <div class="card bg-white my-2 mx-6 p-2 rounded-lg flex flex-col justify-center items-center"">
-    //         <h2 class=" font-bold p-2">Make a gift</h2>
-    //         <div class="p-2">Asso 1</div>
-    //         <div class="p-2">Asso 2</div>
-    //         <div class="p-2">Asso 3</div>
-    //         <div class="p-2">Asso 4</div>
-    //         <div class="p-2">Asso 5</div>
-    //     </div>
-    // `,
     profile: `
         <div class="card bg-white my-2 mx-6 p-2 rounded-lg flex flex-col justify-center items-center"">
             <h2 class=" font-bold p-2">My Profile</h2>
@@ -119,7 +112,7 @@ const cards = {
             </form>
         </div>
     `,
-    manageVolunteers:`
+    admin:`
         <div class="card bg-white my-4 mx-6 p-4 rounded-xl shadow-lg flex flex-col gap-4">
             <h2 class="font-bold text-lg text-center">Manage Volunteers</h2>
             <button class="add-btn flex items-center justify-center gap-2 bg-my-green hover:bg-green-600 transition text-white px-4 py-2 rounded-lg self-center">
@@ -166,7 +159,10 @@ const cards = {
     </div>
     `
 }
+
+
 // init functions
+
 function showCard(cardName) {
     const content = document.querySelector('#content');
     const navBtns = document.querySelectorAll('.nav-btn');
@@ -182,6 +178,8 @@ function showCard(cardName) {
     });
 }
 // execute code
+
 document.addEventListener('DOMContentLoaded', function () {
-    showCard('dashboard');
+    navbar.style = "display: none;";
+    showCard('signIn');
 });
