@@ -53,16 +53,16 @@ const cards = {
             </form>
         </div>
     `,
-    gifts: `
-        <div class="card bg-white my-2 mx-6 p-2 rounded-lg flex flex-col justify-center items-center"">
-            <h2 class=" font-bold p-2">Make a gift</h2>
-            <div class="p-2">Asso 1</div>
-            <div class="p-2">Asso 2</div>
-            <div class="p-2">Asso 3</div>
-            <div class="p-2">Asso 4</div>
-            <div class="p-2">Asso 5</div>
-        </div>
-    `,
+    // gifts: `
+    //     <div class="card bg-white my-2 mx-6 p-2 rounded-lg flex flex-col justify-center items-center"">
+    //         <h2 class=" font-bold p-2">Make a gift</h2>
+    //         <div class="p-2">Asso 1</div>
+    //         <div class="p-2">Asso 2</div>
+    //         <div class="p-2">Asso 3</div>
+    //         <div class="p-2">Asso 4</div>
+    //         <div class="p-2">Asso 5</div>
+    //     </div>
+    // `,
     profile: `
         <div class="card bg-white my-2 mx-6 p-2 rounded-lg flex flex-col justify-center items-center"">
             <h2 class=" font-bold p-2">My Profile</h2>
@@ -102,14 +102,14 @@ const cards = {
 
 // init functions
 
-function showPage(cardName) {
-    const content = document.getElementById('content');
+function showCard(cardName) {
+    const content = document.querySelector('#content');
     const navBtns = document.querySelectorAll('.nav-btn');
 
     content.innerHTML = cards[cardName] || cards.dashboard;
 
     navBtns.forEach(btn => {
-        if (btn.dataset.page === cardName) {
+        if (btn.dataset.card === cardName) {
             btn.classList.add('text-my-green');
             btn.classList.remove('text-my-black');
         } else {
@@ -123,5 +123,5 @@ function showPage(cardName) {
 // execute code
 
 document.addEventListener('DOMContentLoaded', function () {
-    showPage('dashboard');
+    showCard('dashboard');
 });
