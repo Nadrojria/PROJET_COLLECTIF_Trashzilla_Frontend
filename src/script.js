@@ -4,12 +4,12 @@ const navbar = document.querySelector("#navbar");
 
 const cards = {
     signIn: `
-        <div class="card bg-white my-2 mx-6 p-2 rounded-lg flex flex-col justify-center items-center">
+        <div class="card bg-white m-6 p-2 pb-4 rounded-lg flex flex-col justify-center items-center">
             <h2 class=" font-bold p-2">Sign In</h2>
             <form action="" class="flex flex-col gap-4">
                 <div class="first-name flex flex-col">
                     <label for="first-name">Email *</label>
-                    <input type="email" pattern=".+@example\.com" placeholder="example@domain.com" required>
+                    <input type="email" placeholder="example@domain.com" required>
                 </div>
                 <div class="last-name flex flex-col">
                     <label for="last-name">Password *</label>
@@ -27,7 +27,7 @@ const cards = {
         </div>
     `,
     dashboard: `
-        <div class="card bg-white my-2 mx-6 p-2 rounded-lg flex flex-col justify-center items-center"">
+        <div class="card bg-white m-6 p-2 pb-4 rounded-lg flex flex-col justify-center items-center">
             <h2 class=" font-bold p-2">Hello Lolo le zozo !</h2>
             <div class="p-2">Déchet 1</div>
             <div class="p-2">Déchet 2</div>
@@ -37,10 +37,10 @@ const cards = {
         </div>
     `,
     collects: `
-        <div class="card bg-white my-2 mx-6 p-2 rounded-lg flex flex-col justify-center items-center"">
+        <div class="card bg-white m-6 p-2 pb-4 rounded-lg flex flex-col justify-center items-center">
             <h2 class=" font-bold p-2">Save a collect</h2>
             <form action="" class="flex flex-col gap-4">
-                <div class="date flex flex-col">
+                <div class="date flex flex-col" >
                     <label for="date">Date *</label>
                     <input type="date">
                 </div>
@@ -79,7 +79,7 @@ const cards = {
         </div>
     `,
     profile: `
-        <div class="card bg-white my-2 mx-6 p-2 rounded-lg flex flex-col justify-center items-center"">
+        <div class="card bg-white m-6 p-2 pb-4 rounded-lg flex flex-col justify-center items-center">
             <h2 class=" font-bold p-2">My Profile</h2>
             <form action="" class="flex flex-col gap-4">
                 <div class="first-name flex flex-col">
@@ -113,7 +113,7 @@ const cards = {
         </div>
     `,
     admin:`
-        <div class="card bg-white my-4 mx-6 p-4 rounded-xl shadow-lg flex flex-col gap-4">
+        <div class="card bg-white m-6 p-4 pb-4 rounded-xl shadow-lg flex flex-col gap-4">
             <h2 class="font-bold text-lg text-center">Manage Volunteers</h2>
             <button class="add-btn flex items-center justify-center gap-2 bg-my-green hover:bg-green-600 transition text-white px-4 py-2 rounded-lg self-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -180,6 +180,6 @@ function showCard(cardName) {
 // execute code
 
 document.addEventListener('DOMContentLoaded', function () {
-    navbar.style = "display: none;";
-    showCard('signIn');
+    //navbar.style = "display: none;";
+    showCard('dashboard');
 });
