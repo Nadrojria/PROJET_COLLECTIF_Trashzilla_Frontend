@@ -8,23 +8,28 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Mogra&display=swap" rel="stylesheet">
   <link href="./dist/output.css" rel="stylesheet">
   <link rel="icon" href="./src/images/Logo Trashzilla.png" type="image/x-icon" sizes="16x16">
   <script src="./src/script.js" defer></script>
 </head>
 
 <body class="bg-my-beige text-my-black">
-  <header class="bg-my-green flex flex-col gap-2 p-2 text-white">
-    <div class="flex justify-center items-center gap-4">
-      <img class="size-12" src="./src/images/Logo Trashzilla.png" alt="Trashzilla Logo">
-      <h1 class="text-4xl">Trashzilla</h1>
+  <header class="bg-my-green text-white font-mogra p-3">
+    <div class="flex flex-col items-center gap-2 text-center">
+      <div class="flex items-center gap-3">
+        <img class="w-16 h-16 object-contain" src="./src/images/Logo Trashzilla.png" alt="Trashzilla Logo">
+        <div>
+          <h1 class="text-4xl leading-tight">TRASHZILLA</h1>
+          <p class="text-xs">Feed the trash monster!</p>
+        </div>
+      </div>
     </div>
-    <p class="text-sm flex justify-center items-center">Feed the trash monster !</p>
   </header>
   <nav class="bg-white">
     <div class="flex justify-evenly gap-2">
-      <button onclick="showCard('dashboard')" class="nav-btn flex flex-col items-center p-2 rounded transition-colors"
-        data-card="dashboard">
+      <button onclick="showCard('dashboard')"
+        class="nav-btn flex flex-col items-center p-2 rounded transition-colors p-" data-card="dashboard">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
           class="lucide lucide-sprout-icon lucide-sprout">
@@ -50,16 +55,6 @@
         </svg>
         <span class="text-sm">Collects</span>
       </button>
-      <!-- <button onclick="showCard('gifts')" class="nav-btn flex flex-col items-center p-2 rounded transition-colors"
-        data-card="gifts">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="lucide lucide-heart-icon lucide-heart">
-          <path
-            d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-        </svg>
-        <span class="text-sm">Gifts</span>
-      </button> -->
       <button onclick="showCard('profile')" class="nav-btn flex flex-col items-center p-2 rounded transition-colors"
         data-card="profile">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -76,7 +71,7 @@
 
   </main>
   <footer class="flex justify-center items-center p-2">
-    <p class="text-sm">🌱 Thanks for acting for Earth. You are the change.</p>
+    <p class="text-xs italic">🌱 You're not just picking up trash, you're picking up hope.</p>
   </footer>
 </body>
 
