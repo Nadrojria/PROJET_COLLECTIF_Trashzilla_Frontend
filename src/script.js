@@ -1,6 +1,9 @@
 // init variables
 
 let currentUser = "";
+let currentRole = "";
+const navbar = document.querySelector("#navbar");
+
 const cards = {
     signIn: `
         <div class="card bg-white m-6 p-4 pb-4 rounded-xl shadow-lg flex flex-col gap-4">
@@ -181,7 +184,6 @@ const cards = {
         </div>
     `
 }
-const navbar = document.querySelector("#navbar");
 
 // init functions
 
@@ -209,14 +211,16 @@ function showCard(name) {
 
             if (logInData.success) {
                 currentUser = logInData.firstName;
+                currentRole = logInData.role;
                 localStorage.setItem("currentUser", JSON.stringify(currentUser));
+                localStorage.setItem("currentRole", JSON.stringify(currentRole));
 
                 showCard('dashboard');
 
                 navbar.style.display = "block";
 
                 const adminButton = document.querySelector("#admin-btn");
-                if (logInData.role === "volunteer") {
+                if (currentRole === "volunteer") {
                     adminButton.style.display = "none";
                 }
             }
@@ -230,6 +234,7 @@ function showCard(name) {
         const logOutBtn = document.querySelector("#log-out-btn");
         logOutBtn.addEventListener("click", () => {
             localStorage.removeItem("currentUser");
+            localStorage.removeItem("currentRole");
             navbar.style.display = "none";
             showCard("signIn");
         })
@@ -243,7 +248,8 @@ function animateNavbar(name) {
         if (btn.dataset.card === name) {
             btn.classList.add('text-my-green');
             btn.classList.remove('text-my-black');
-        } else {
+        }
+        else {
             btn.classList.add('text-my-black');
             btn.classList.remove('text-my-green');
         }
@@ -252,12 +258,12 @@ function animateNavbar(name) {
 
 function updateLocalStorage() {
     const currentUserString = localStorage.getItem("currentUser");
+    const roleString = localStorage.getItem("currentRole");
+
     if (currentUserString) {
         currentUser = JSON.parse(currentUserString);
+        currentRole = JSON.parse(roleString);
     }
-
-    const roleString = localStorage.gteItem("role");
-    if (roleString)
 }
 
 
@@ -271,11 +277,11 @@ document.addEventListener('DOMContentLoaded', function () {
         showCard("dashboard");
 
         const adminButton = document.querySelector("#admin-btn");
-        if (logInData.role === "volunteer") {
+        if (currentRole == "volunteer") {
             adminButton.style.display = "none";
         }
-
-    } else {
+    }
+    else {
         navbar.style.display = "none";
         showCard('signIn');
     }
