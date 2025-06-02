@@ -185,8 +185,8 @@ const cards = {
     `
 }
 
-// init functions
 
+// init functions
 
 function showCard(name) {
     const content = document.querySelector('#content');
@@ -194,50 +194,66 @@ function showCard(name) {
 
     content.innerHTML = typeof card === 'function' ? card() : card;
     animateNavbar(name);
-    if (name === "signIn") {
-        const form = document.querySelector("form");
+    handleSignInCard(name);
+    handleProfileCard(name);
+    showAdminBtn();
+}
 
-        form.addEventListener("submit", async function (e) {
-            e.preventDefault();
-
-            const email = document.querySelector("#email").value;
-            const password = document.querySelector("#password").value;
-            const logInResponse = await fetch('http://localhost:8085/api/login', {
-                method: 'Post',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, password: password }),
-            });
-            const logInData = await logInResponse.json();
-
-            if (logInData.success) {
-                currentUser = logInData.firstName;
-                currentRole = logInData.role;
-                localStorage.setItem("currentUser", JSON.stringify(currentUser));
-                localStorage.setItem("currentRole", JSON.stringify(currentRole));
-
-                showCard('dashboard');
-
-                navbar.style.display = "block";
-
-                const adminButton = document.querySelector("#admin-btn");
-                if (currentRole === "volunteer") {
-                    adminButton.style.display = "none";
-                }
-            }
-            else {
-                alert("Error! Check Info.");
-            }
-        })
+function handleSignInCard(name) {
+    if (name !== "signIn") {
+        return;
     }
 
-    if (name === "profile") {
-        const logOutBtn = document.querySelector("#log-out-btn");
-        logOutBtn.addEventListener("click", () => {
-            localStorage.removeItem("currentUser");
-            localStorage.removeItem("currentRole");
-            navbar.style.display = "none";
-            showCard("signIn");
-        })
+    const form = document.querySelector("form");
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const email = document.querySelector("#email").value;
+        const password = document.querySelector("#password").value;
+        const logInResponse = await fetch('http://localhost:8085/api/login', {
+            method: 'Post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, password: password }),
+        });
+        const logInData = await logInResponse.json();
+
+        if (logInData.success) {
+            currentUser = logInData.firstName;
+            currentRole = logInData.role;
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            localStorage.setItem("currentRole", JSON.stringify(currentRole));
+
+            showCard('dashboard');
+
+            navbar.style.display = "block";
+        }
+        else {
+            alert("Error! Check Info.");
+        }
+    })
+}
+
+function handleProfileCard(name) {
+    if (name !== "profile") {
+        return;
+    }
+    const logOutBtn = document.querySelector("#log-out-btn");
+    logOutBtn.addEventListener("click", () => {
+        localStorage.removeItem("currentUser");
+        localStorage.removeItem("currentRole");
+        navbar.style.display = "none";
+        showCard("signIn");
+    })
+}
+
+function showAdminBtn() {
+    const adminButton = document.querySelector("#admin-btn");
+    if (currentRole === "volunteer") {
+        adminButton.style.display = "none";
+    }
+    else {
+        adminButton.style.display = "flex";
     }
 }
 
@@ -270,21 +286,15 @@ function updateLocalStorage() {
 // execute code
 
 document.addEventListener('DOMContentLoaded', function () {
-
     updateLocalStorage();
 
     if (currentUser) {
         showCard("dashboard");
-
-        const adminButton = document.querySelector("#admin-btn");
-        if (currentRole == "volunteer") {
-            adminButton.style.display = "none";
-        }
+        showAdminBtn();
     }
     else {
         navbar.style.display = "none";
         showCard('signIn');
     }
-
 });
 
