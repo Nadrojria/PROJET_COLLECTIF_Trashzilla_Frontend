@@ -131,7 +131,7 @@ const cards = {
             </form>
         </div>
     `,
-    admin:`
+    admin: `
         <div class="card bg-white m-6 p-4 pb-4 rounded-xl shadow-lg flex flex-col gap-4">
             <h2 class="font-bold text-lg text-center">Manage Volunteers</h2>
             <button
@@ -185,6 +185,7 @@ const navbar = document.querySelector("#navbar");
 
 // init functions
 
+
 function showCard(name) {
     const content = document.querySelector('#content');
     const card = cards[name];
@@ -193,27 +194,28 @@ function showCard(name) {
     animateNavbar(name);
     if (name === "signIn") {
         const form = document.querySelector("form");
-        
+
         form.addEventListener("submit", async function (e) {
             e.preventDefault();
-        
+
             const email = document.querySelector("#email").value;
             const password = document.querySelector("#password").value;
             const logInResponse = await fetch('http://localhost:8085/api/login', {
                 method: 'Post',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({email: email, password: password}),
+                body: JSON.stringify({ email: email, password: password }),
             });
             const logInData = await logInResponse.json();
-            
+
             if (logInData.success) {
                 currentUser = logInData.firstName;
                 localStorage.setItem("currentUser", JSON.stringify(currentUser));
 
                 showCard('dashboard');
-                navbar.style.display = "block";
-                const adminButton = document.querySelector("#admin-btn");
 
+                navbar.style.display = "block";
+
+                const adminButton = document.querySelector("#admin-btn");
                 if (logInData.role === "volunteer") {
                     adminButton.style.display = "none";
                 }
@@ -227,7 +229,7 @@ function showCard(name) {
     if (name === "profile") {
         const logOutBtn = document.querySelector("#log-out-btn");
         logOutBtn.addEventListener("click", () => {
-            localStorage.removeItem ("currentUser");
+            localStorage.removeItem("currentUser");
             navbar.style.display = "none";
             showCard("signIn");
         })
@@ -253,6 +255,9 @@ function updateLocalStorage() {
     if (currentUserString) {
         currentUser = JSON.parse(currentUserString);
     }
+
+    const roleString = localStorage.gteItem("role");
+    if (roleString)
 }
 
 
@@ -261,9 +266,15 @@ function updateLocalStorage() {
 document.addEventListener('DOMContentLoaded', function () {
 
     updateLocalStorage();
-    
-    if(currentUser) {
+
+    if (currentUser) {
         showCard("dashboard");
+
+        const adminButton = document.querySelector("#admin-btn");
+        if (logInData.role === "volunteer") {
+            adminButton.style.display = "none";
+        }
+
     } else {
         navbar.style.display = "none";
         showCard('signIn');
