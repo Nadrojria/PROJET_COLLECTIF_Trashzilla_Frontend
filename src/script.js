@@ -1,7 +1,6 @@
 // init variables
 
-const navbar = document.querySelector("#navbar");
-
+let currentUser = "";
 const cards = {
     signIn: `
         <div class="card bg-white m-6 p-4 pb-4 rounded-xl shadow-lg flex flex-col gap-4">
@@ -31,9 +30,9 @@ const cards = {
             </form>
         </div>
     `,
-    dashboard: `
+    dashboard: () => `
         <div class="card bg-white m-6 p-4 pb-4 rounded-xl shadow-lg flex flex-col gap-4">
-            <h2 class="font-bold text-lg text-center">Hello Lolo le zozo !</h2>
+            <h2 class="font-bold text-lg text-center">Hello ${currentUser}!</h2>
             <div class="waste-list flex flex-col gap-3">
                 <div class="waste-item bg-slate-100 px-4 py-3 rounded-lg shadow-sm">Déchet 1</div>
                 <div class="waste-item bg-slate-100 px-4 py-3 rounded-lg shadow-sm">Déchet 2</div>
@@ -118,6 +117,7 @@ const cards = {
                     <span class="text-sm font-medium">Update</span>
                 </button>
                 <button type="submit"
+                    id="log-out-btn" 
                     class="log-out-btn flex items-center justify-center gap-2 bg-my-black hover:bg-my-black transition text-white px-4 py-2 rounded-lg self-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -181,16 +181,64 @@ const cards = {
         </div>
     `
 }
-
+const navbar = document.querySelector("#navbar");
 
 // init functions
 
-function showCard(cardName) {
+function showCard(name) {
     const content = document.querySelector('#content');
+    const card = cards[name];
+
+    content.innerHTML = typeof card === 'function' ? card() : card;
+    animateNavbar(name);
+    if (name === "signIn") {
+        const form = document.querySelector("form");
+        
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+        
+            const email = document.querySelector("#email").value;
+            const password = document.querySelector("#password").value;
+            const logInResponse = await fetch('http://localhost:8080/api/login', {
+                method: 'Post',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({email: email, password: password}),
+            });
+            const logInData = await logInResponse.json();
+            
+            if (logInData.success) {
+                currentUser = logInData.firstName;
+                localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+                showCard('dashboard');
+                navbar.style.display = "block";
+                const adminButton = document.querySelector("#admin-btn");
+
+                if (logInData.role === "volunteer") {
+                    adminButton.style.display = "none";
+                }
+            }
+            else {
+                alert("Error! Check Info.");
+            }
+        })
+    }
+
+    if (name === "profile") {
+        const logOutBtn = document.querySelector("#log-out-btn");
+        logOutBtn.addEventListener("click", () => {
+            localStorage.removeItem ("currentUser");
+            navbar.style.display = "none";
+            showCard("signIn");
+        })
+    }
+}
+
+function animateNavbar(name) {
     const navBtns = document.querySelectorAll('.nav-btn');
-    content.innerHTML = cards[cardName] || cards.dashboard;
+
     navBtns.forEach(btn => {
-        if (btn.dataset.card === cardName) {
+        if (btn.dataset.card === name) {
             btn.classList.add('text-my-green');
             btn.classList.remove('text-my-black');
         } else {
@@ -199,9 +247,27 @@ function showCard(cardName) {
         }
     });
 }
+
+function updateLocalStorage() {
+    const currentUserString = localStorage.getItem("currentUser");
+    if (currentUserString) {
+        currentUser = JSON.parse(currentUserString);
+    }
+}
+
+
 // execute code
 
 document.addEventListener('DOMContentLoaded', function () {
-    // navbar.style = "display: none;";
-    showCard('dashboard');
+
+    updateLocalStorage();
+    
+    if(currentUser) {
+        showCard("dashboard");
+    } else {
+        navbar.style.display = "none";
+        showCard('signIn');
+    }
+
 });
+
