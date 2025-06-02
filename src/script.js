@@ -199,7 +199,7 @@ function showCard(name) {
         
             const email = document.querySelector("#email").value;
             const password = document.querySelector("#password").value;
-            const logInResponse = await fetch('http://localhost:8080/api/login', {
+            const logInResponse = await fetch('http://localhost:8085/api/login', {
                 method: 'Post',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({email: email, password: password}),
