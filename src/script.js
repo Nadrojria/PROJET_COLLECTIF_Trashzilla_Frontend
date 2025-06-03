@@ -184,7 +184,7 @@ async function showCard(name) {
     animateNavbar(name);
     handleSignInCard(name);
     handleProfileCard(name);
-    // handleAdminCard(name);
+    handleAdminCard(name);
     showAdminBtn();
 }
 
@@ -243,43 +243,39 @@ function handleProfileCard(name) {
     })
 }
 
-// function handleAdminCard(name) {
-//     if (name !== "admin") {
-//         return;
-//     }
+function handleAdminCard(name) {
+    if (name !== "admin") {
+        return;
+    }
 
-//     const form = document.querySelector("form");
+    const allDeleteBtn = document.querySelectorAll(".delete-btn");
 
-//     const email = document.querySelector("#email").value;
-//     const password = document.querySelector("#password").value;
+    allDeleteBtn.forEach((btn) => {
+        btn.addEventListener("click", async () => {
+            const userId = btn.dataset.userId;
+            console.log(userId);
 
-//     try {
-//         const logInResponse = await fetch('http://localhost:8085/api/login', {
-//             method: 'Post',
-//             headers: { 'Content-Type': 'application/json' },
-//             body: JSON.stringify({ email: email, password: password }),
-//         });
-//         const logInData = await logInResponse.json();
+            try {
+                const deleteResponse = await fetch(`http://localhost:8085/api/admin/user/${userId}`, {
+                    method: 'Delete',
+                });
+                const deleteData = await deleteResponse.json();
 
-//         if (logInData.success) {
-//             currentUser = logInData.firstName;
-//             currentRole = logInData.role;
-//             localStorage.setItem("currentUser", JSON.stringify(currentUser));
-//             localStorage.setItem("currentRole", JSON.stringify(currentRole));
+                if (deleteData.success) {
+                    showCard('admin');
+                }
+                else {
+                    alert("Failed to delete user.");
+                }
+            }
+            catch (error) {
+                console.error("Login error:", error);
+                alert("An error occurred during deleting user. Please try again.");
+            }
+        })
+    })
 
-//             showCard('dashboard');
-
-//             navbar.style.display = "block";
-//         }
-//         else {
-//             alert("Verify login and password.");
-//         }
-//     }
-//     catch (error) {
-//         console.error("Login error:", error);
-//         alert("An error occurred during login. Please try again.");
-//     }
-// }
+}
 
 async function getUsersList() {
     try {
@@ -291,6 +287,46 @@ async function getUsersList() {
         console.error("Get error:", error);
         alert("An error occurred during getting info from API.");
     }
+}
+
+function displayUsers(usersList) {
+    let result = "";
+
+    usersList.forEach((user) => {
+        result += `
+            <div class="volunteer-item flex justify-between items-center bg-slate-100 px-4 py-3 rounded-lg shadow-sm">
+                <div class="volunteer-info flex flex-col">
+                    <h3 class="font-semibold">${user.firstName} ${user.lastName}</h3>
+                    <p class="text-sm text-gray-500 italic">${user.city}</p>
+                </div>
+                <div class="volunteer-actions flex gap-3">
+                    <button
+                        class="action-btn edit-btn flex items-center justify-center bg-sky-200 text-sky-800 p-2 rounded-md hover:bg-sky-300 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-pen" aria-hidden="true">
+                            <path
+                                d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button
+                        class="action-btn delete-btn flex items-center justify-center bg-red-200 text-red-700 p-2 rounded-md hover:bg-red-300 transition" data-user-id="${user.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-trash-2" aria-hidden="true">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            <line x1="10" x2="10" y1="11" y2="17"></line>
+                            <line x1="14" x2="14" y1="11" y2="17"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        `;
+    })
+    return result;
 }
 
 function showAdminBtn() {
@@ -326,46 +362,6 @@ function updateLocalStorage() {
         currentUser = JSON.parse(currentUserString);
         currentRole = JSON.parse(roleString);
     }
-}
-
-function displayUsers(usersList) {
-    let result = "";
-
-    usersList.forEach((user) => {
-        result += `
-            <div class="volunteer-item flex justify-between items-center bg-slate-100 px-4 py-3 rounded-lg shadow-sm">
-                <div class="volunteer-info flex flex-col">
-                    <h3 class="font-semibold">${user.firstName} ${user.lastName}</h3>
-                    <p class="text-sm text-gray-500 italic">${user.city}</p>
-                </div>
-                <div class="volunteer-actions flex gap-3">
-                    <button
-                        class="action-btn edit-btn flex items-center justify-center bg-sky-200 text-sky-800 p-2 rounded-md hover:bg-sky-300 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-pen" aria-hidden="true">
-                            <path
-                                d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
-                            </path>
-                        </svg>
-                    </button>
-                    <button
-                        class="action-btn delete-btn flex items-center justify-center bg-red-200 text-red-700 p-2 rounded-md hover:bg-red-300 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-trash-2" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        `;
-    })
-    return result;
 }
 
 
