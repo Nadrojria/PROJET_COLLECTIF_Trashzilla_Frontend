@@ -2,6 +2,18 @@
 
 let currentUser = "";
 let currentRole = "";
+let usersData = [
+    {
+        firstName: "Monica",
+        lastName: "Geller",
+        city: "Paris"
+    },
+    {
+        firstName: "Rachel",
+        lastName: "Green",
+        city: "Lyon"
+    }
+]
 const navbar = document.querySelector("#navbar");
 
 const cards = {
@@ -134,7 +146,9 @@ const cards = {
             </form>
         </div>
     `,
-    admin: `
+    admin: async () => {
+        const usersList = await getUsersList();
+        return `
         <div class="card bg-white m-6 p-4 pb-4 rounded-xl shadow-lg flex flex-col gap-4">
             <h2 class="font-bold text-lg text-center">Manage Volunteers</h2>
             <button
@@ -150,52 +164,27 @@ const cards = {
                 <span class="text-sm font-medium">Add Volunteers</span>
             </button>
             <div class="volunteers-list flex flex-col gap-3">
-                <div class="volunteer-item flex justify-between items-center bg-slate-100 px-4 py-3 rounded-lg shadow-sm">
-                    <div class="volunteer-info flex flex-col">
-                        <h3 class="font-semibold">Monica Geller</h3>
-                        <p class="text-sm text-gray-500 italic">Paris</p>
-                    </div>
-                    <div class="volunteer-actions flex gap-3">
-                        <button
-                            class="action-btn edit-btn flex items-center justify-center bg-sky-200 text-sky-800 p-2 rounded-md hover:bg-sky-300 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                class="lucide lucide-pen" aria-hidden="true">
-                                <path
-                                    d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
-                                </path>
-                            </svg>
-                        </button>
-                        <button
-                            class="action-btn delete-btn flex items-center justify-center bg-red-200 text-red-700 p-2 rounded-md hover:bg-red-300 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                class="lucide lucide-trash-2" aria-hidden="true">
-                                <path d="M3 6h18"></path>
-                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                <line x1="10" x2="10" y1="11" y2="17"></line>
-                                <line x1="14" x2="14" y1="11" y2="17"></line>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
+                ${displayUsers(usersList)}
             </div>
         </div>
-    `
+    `}
 }
 
 
 // init functions
 
-function showCard(name) {
+async function showCard(name) {
     const content = document.querySelector('#content');
     const card = cards[name];
 
-    content.innerHTML = typeof card === 'function' ? card() : card;
+    content.innerHTML = typeof card === 'function'
+        ? (card.constructor.name === "AsyncFunction" ? await card() : card())
+        : card;
+
     animateNavbar(name);
     handleSignInCard(name);
     handleProfileCard(name);
+    // handleAdminCard(name);
     showAdminBtn();
 }
 
@@ -211,25 +200,32 @@ function handleSignInCard(name) {
 
         const email = document.querySelector("#email").value;
         const password = document.querySelector("#password").value;
-        const logInResponse = await fetch('http://localhost:8085/api/login', {
-            method: 'Post',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: email, password: password }),
-        });
-        const logInData = await logInResponse.json();
 
-        if (logInData.success) {
-            currentUser = logInData.firstName;
-            currentRole = logInData.role;
-            localStorage.setItem("currentUser", JSON.stringify(currentUser));
-            localStorage.setItem("currentRole", JSON.stringify(currentRole));
+        try {
+            const logInResponse = await fetch('http://localhost:8085/api/login', {
+                method: 'Post',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, password: password }),
+            });
+            const logInData = await logInResponse.json();
 
-            showCard('dashboard');
+            if (logInData.success) {
+                currentUser = logInData.firstName;
+                currentRole = logInData.role;
+                localStorage.setItem("currentUser", JSON.stringify(currentUser));
+                localStorage.setItem("currentRole", JSON.stringify(currentRole));
 
-            navbar.style.display = "block";
+                showCard('dashboard');
+
+                navbar.style.display = "block";
+            }
+            else {
+                alert("Verify login and password.");
+            }
         }
-        else {
-            alert("Error! Check Info.");
+        catch (error) {
+            console.error("Login error:", error);
+            alert("An error occurred during login. Please try again.");
         }
     })
 }
@@ -245,6 +241,56 @@ function handleProfileCard(name) {
         navbar.style.display = "none";
         showCard("signIn");
     })
+}
+
+// function handleAdminCard(name) {
+//     if (name !== "admin") {
+//         return;
+//     }
+
+//     const form = document.querySelector("form");
+
+//     const email = document.querySelector("#email").value;
+//     const password = document.querySelector("#password").value;
+
+//     try {
+//         const logInResponse = await fetch('http://localhost:8085/api/login', {
+//             method: 'Post',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({ email: email, password: password }),
+//         });
+//         const logInData = await logInResponse.json();
+
+//         if (logInData.success) {
+//             currentUser = logInData.firstName;
+//             currentRole = logInData.role;
+//             localStorage.setItem("currentUser", JSON.stringify(currentUser));
+//             localStorage.setItem("currentRole", JSON.stringify(currentRole));
+
+//             showCard('dashboard');
+
+//             navbar.style.display = "block";
+//         }
+//         else {
+//             alert("Verify login and password.");
+//         }
+//     }
+//     catch (error) {
+//         console.error("Login error:", error);
+//         alert("An error occurred during login. Please try again.");
+//     }
+// }
+
+async function getUsersList() {
+    try {
+        const usersListResponse = await fetch('http://localhost:8085/api/admin/users-info');
+        const usersListData = await usersListResponse.json();
+
+        return usersListData;
+    } catch (error) {
+        console.error("Get error:", error);
+        alert("An error occurred during getting info from API.");
+    }
 }
 
 function showAdminBtn() {
@@ -280,6 +326,46 @@ function updateLocalStorage() {
         currentUser = JSON.parse(currentUserString);
         currentRole = JSON.parse(roleString);
     }
+}
+
+function displayUsers(usersList) {
+    let result = "";
+
+    usersList.forEach((user) => {
+        result += `
+            <div class="volunteer-item flex justify-between items-center bg-slate-100 px-4 py-3 rounded-lg shadow-sm">
+                <div class="volunteer-info flex flex-col">
+                    <h3 class="font-semibold">${user.firstName} ${user.lastName}</h3>
+                    <p class="text-sm text-gray-500 italic">${user.city}</p>
+                </div>
+                <div class="volunteer-actions flex gap-3">
+                    <button
+                        class="action-btn edit-btn flex items-center justify-center bg-sky-200 text-sky-800 p-2 rounded-md hover:bg-sky-300 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-pen" aria-hidden="true">
+                            <path
+                                d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button
+                        class="action-btn delete-btn flex items-center justify-center bg-red-200 text-red-700 p-2 rounded-md hover:bg-red-300 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-trash-2" aria-hidden="true">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            <line x1="10" x2="10" y1="11" y2="17"></line>
+                            <line x1="14" x2="14" y1="11" y2="17"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        `;
+    })
+    return result;
 }
 
 
