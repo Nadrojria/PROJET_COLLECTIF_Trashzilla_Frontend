@@ -2,19 +2,9 @@
 
 let currentUser = "";
 let currentRole = "";
-let usersData = [
-    {
-        firstName: "Monica",
-        lastName: "Geller",
-        city: "Paris"
-    },
-    {
-        firstName: "Rachel",
-        lastName: "Green",
-        city: "Lyon"
-    }
-]
+let test;
 const navbar = document.querySelector("#navbar");
+const adminModal = document.querySelector("#admin-modal");
 
 const cards = {
     signIn: `
@@ -131,7 +121,8 @@ const cards = {
                     </svg>
                     <span class="text-sm font-medium">Update</span>
                 </button>
-                <button type="submit"
+                <hr><hr>
+                <button type="button"
                     id="log-out-btn" 
                     class="log-out-btn flex items-center justify-center gap-2 bg-my-black hover:bg-my-black transition text-white px-4 py-2 rounded-lg self-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -253,7 +244,6 @@ function handleAdminCard(name) {
     allDeleteBtn.forEach((btn) => {
         btn.addEventListener("click", async () => {
             const userId = btn.dataset.userId;
-            console.log(userId);
 
             try {
                 const deleteResponse = await fetch(`http://localhost:8085/api/admin/user/${userId}`, {
@@ -275,6 +265,49 @@ function handleAdminCard(name) {
         })
     })
 
+    const allEditBtn = document.querySelectorAll(".edit-btn");
+
+    allEditBtn.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            adminModal.style.display = "block";
+            test = btn.dataset.userId;
+            console.log(test);
+            console.log(typeof(test));
+
+            const cancelBtn = document.querySelector("#cancel-btn");
+            const modifyBtn = document.querySelector("#modify-btn");
+
+            cancelBtn.addEventListener("click", () => {
+                adminModal.style.display = "none";
+            })
+            modifyBtn.addEventListener("click", async () => {
+                const firstName = document.querySelector("#modal-first-name").value;
+                const lastName = document.querySelector("#modal-last-name").value;
+                const city = document.querySelector("#modal-city").value;
+                const role = document.querySelector("#modal-role").value;
+
+                try {
+                    const modifyResponse = await fetch(`http://localhost:8085/api/admin/user/${test}`, {
+                        method: 'Put',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ firstName: firstName, lastName: lastName, city: city, role: role }),
+                    });
+                    const modifyData = await modifyResponse.json();
+
+                    if (modifyData.success) {
+                        showCard('admin');
+                    }
+                    else {
+                        alert("Failed to modify user.");
+                    }
+                }
+                catch (error) {
+                    console.error("Login error:", error);
+                    alert("An error occurred during modifying user. Please try again.");
+                }
+            })
+        })
+    })
 }
 
 async function getUsersList() {
@@ -301,7 +334,7 @@ function displayUsers(usersList) {
                 </div>
                 <div class="volunteer-actions flex gap-3">
                     <button
-                        class="action-btn edit-btn flex items-center justify-center bg-sky-200 text-sky-800 p-2 rounded-md hover:bg-sky-300 transition">
+                        class="action-btn edit-btn flex items-center justify-center bg-sky-200 text-sky-800 p-2 rounded-md hover:bg-sky-300 transition" data-user-id="${user.id}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             class="lucide lucide-pen" aria-hidden="true">
