@@ -2,7 +2,9 @@
 
 let currentUser = "";
 let currentRole = "";
-let test;
+let globalUserId;
+let globalUserFirstName;
+let globalUserLastName;
 const navbar = document.querySelector("#navbar");
 const adminModal = document.querySelector("#admin-modal");
 
@@ -59,15 +61,15 @@ const cards = {
                 <div class="location flex flex-col">
                     <label for="location" class="text-sm font-medium">Location</label>
                     <select id="location"
-                        class="mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-my-green">
-                        <option value="">Choose a city</option>
-                        <option value="1">Paris</option>
-                        <option value="2">Marseille</option>
-                        <option value="3">Lyon</option>
-                        <option value="4">Toulouse</option>
-                        <option value="5">Nice</option>
-                        <option value="6">Nantes</option>
-                        <option value="7">Strasbourg</option>
+                        class="mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-my-green" required>
+                        <option value="">-- Choose a city --</option>
+                        <option value="Paris">Paris</option>
+                        <option value="Marseille">Marseille</option>
+                        <option value="Lyon">Lyon</option>
+                        <option value="Toulouse">Toulouse</option>
+                        <option value="Nice">Nice</option>
+                        <option value="Nantes">Nantes</option>
+                        <option value="Strasbourg">Strasbourg</option>
                     </select>
                 </div>
                 <div class="waste-type flex flex-col">
@@ -239,80 +241,111 @@ function handleAdminCard(name) {
         return;
     }
 
-    const allDeleteBtn = document.querySelectorAll(".delete-btn");
-
-    allDeleteBtn.forEach((btn) => {
-        btn.addEventListener("click", async () => {
-            const userId = btn.dataset.userId;
-
-            try {
-                const deleteResponse = await fetch(`http://localhost:8085/api/admin/user/${userId}`, {
-                    method: 'Delete',
-                });
-                const deleteData = await deleteResponse.json();
-
-                if (deleteData.success) {
-                    showCard('admin');
-                }
-                else {
-                    alert("Failed to delete user.");
-                }
-            }
-            catch (error) {
-                console.error("Login error:", error);
-                alert("An error occurred during deleting user. Please try again.");
-            }
-        })
-    })
-
-    const allEditBtn = document.querySelectorAll(".edit-btn");
-
-    allEditBtn.forEach((btn) => {
-        btn.addEventListener("click", () => {
-            adminModal.style.display = "block";
-            test = btn.dataset.userId;
-            console.log(test);
-            console.log(typeof(test));
-
-            const cancelBtn = document.querySelector("#cancel-btn");
-            const modifyBtn = document.querySelector("#modify-btn");
-
-            cancelBtn.addEventListener("click", () => {
-                adminModal.style.display = "none";
-            })
-            modifyBtn.addEventListener("click", async () => {
-                const firstName = document.querySelector("#modal-first-name").value;
-                const lastName = document.querySelector("#modal-last-name").value;
-                const city = document.querySelector("#modal-city").value;
-                const role = document.querySelector("#modal-role").value;
-
-                try {
-                    const modifyResponse = await fetch(`http://localhost:8085/api/admin/user/${test}`, {
-                        method: 'Put',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ firstName: firstName, lastName: lastName, city: city, role: role }),
-                    });
-                    const modifyData = await modifyResponse.json();
-
-                    if (modifyData.success) {
-                        showCard('admin');
-                    }
-                    else {
-                        alert("Failed to modify user.");
-                    }
-                }
-                catch (error) {
-                    console.error("Login error:", error);
-                    alert("An error occurred during modifying user. Please try again.");
-                }
-            })
-        })
-    })
+    initDeleteButtons();
+    initEditButtons();
 }
+
+function initDeleteButtons() {
+    const allDeleteBtn = document.querySelectorAll(".delete-btn");
+    allDeleteBtn.forEach((btn) => {
+        btn.addEventListener("click", () => handleDeleteUser(btn));
+    });
+}
+
+async function handleDeleteUser(btn) {
+    const userId = btn.dataset.userId;
+
+    try {
+        const response = await fetch(`http://localhost:8085/api/admin/user/${userId}`, {
+            method: 'DELETE',
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            showCard('admin');
+        } else {
+            alert("Failed to delete user.");
+        }
+    } catch (error) {
+        console.error("Delete error:", error);
+        alert("An error occurred during deleting user. Please try again.");
+    }
+}
+
+function initEditButtons() {
+    const allEditBtn = document.querySelectorAll(".edit-btn");
+    allEditBtn.forEach((btn) => {
+        btn.addEventListener("click", () => openAdminModal(btn));
+    });
+}
+
+function openAdminModal(btn) {
+    adminModal.showModal();
+
+    globalUserId = btn.dataset.userId;
+    globalUserFirstName = btn.dataset.userFirstname;
+    globalUserLastName = btn.dataset.userLastname;
+
+    document.querySelector("#modal-first-name").value = globalUserFirstName;
+    document.querySelector("#modal-last-name").value = globalUserLastName;
+
+    setupModalButtons();
+}
+
+function closeAdminModal() {
+    adminModal.close();
+}
+
+function setupModalButtons() {
+    const cancelBtn = document.querySelector("#cancel-btn");
+    const modifyBtn = document.querySelector("#modify-btn");
+
+    cancelBtn.addEventListener("click", () => {
+        closeAdminModal();
+    });
+
+    modifyBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        handleModifyUser();
+    });
+}
+
+async function handleModifyUser() {
+    const form = document.querySelector("#modal-form");
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const firstName = document.querySelector("#modal-first-name").value;
+    const lastName = document.querySelector("#modal-last-name").value;
+    const city = document.querySelector("#modal-city").value;
+    const role = document.querySelector("#modal-role").value;
+
+    try {
+        const response = await fetch(`http://localhost:8085/api/admin/user/${globalUserId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ firstName, lastName, city, role }),
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            showCard('admin');
+            closeAdminModal();
+        } else {
+            alert("Failed to modify user.");
+        }
+    } catch (error) {
+        console.error("Modify error:", error);
+        alert("An error occurred during modifying user. Please try again.");
+    }
+}
+
 
 async function getUsersList() {
     try {
-        const usersListResponse = await fetch('http://localhost:8085/api/admin/users-info');
+        const usersListResponse = await fetch('http://localhost:8085/api/admin/user');
         const usersListData = await usersListResponse.json();
 
         return usersListData;
@@ -334,7 +367,7 @@ function displayUsers(usersList) {
                 </div>
                 <div class="volunteer-actions flex gap-3">
                     <button
-                        class="action-btn edit-btn flex items-center justify-center bg-sky-200 text-sky-800 p-2 rounded-md hover:bg-sky-300 transition" data-user-id="${user.id}">
+                        class="action-btn edit-btn flex items-center justify-center bg-sky-200 text-sky-800 p-2 rounded-md hover:bg-sky-300 transition" data-user-id="${user.id}" data-user-firstname="${user.firstName}" data-user-lastname="${user.lastName}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                             class="lucide lucide-pen" aria-hidden="true">
@@ -412,4 +445,3 @@ document.addEventListener('DOMContentLoaded', function () {
         showCard('signIn');
     }
 });
-
