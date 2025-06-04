@@ -6,7 +6,6 @@ let globalUserId;
 let globalUserFirstName;
 let globalUserLastName;
 const navbar = document.querySelector("#navbar");
-const adminModal = document.querySelector("#admin-modal");
 
 const cards = {
     signIn: `
@@ -241,8 +240,216 @@ function handleAdminCard(name) {
         return;
     }
 
+    createModalAdd();
+    createModalModify();
+
+    initAddButton();
     initDeleteButtons();
     initEditButtons();
+}
+
+function createModalAdd() {
+    if (document.querySelector("#add-modal")) {
+        return;
+    }
+
+    const content = document.querySelector("#content");
+    const modalHTML = `
+        <dialog id="add-modal" class="rounded-xl backdrop:bg-black/40 p-0 border-none">
+            <div class="card bg-white m-6 p-4 pb-4 shadow-lg flex flex-col gap-4 w-[90vw] max-w-xl">
+                <h2 class="font-bold text-lg text-left">Add User</h2>
+                <form action="" id="add-modal-form" class="flex flex-col gap-4">
+                    <div class="flex flex-col">
+                        <label for="first-name" class="text-sm font-medium">First name</label>
+                        <input type="text" id="add-modal-first-name" placeholder="New first name"
+                        class="mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-my-green">
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="last-name" class="text-sm font-medium">Last name</label>
+                        <input type="text" id="add-modal-last-name" placeholder="New last name"
+                        class="mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-my-green">
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="email" class="text-sm font-medium">Email</label>
+                        <input type="text" id="add-modal-email" placeholder="New email"
+                        class="mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-my-green">
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="password" class="text-sm font-medium">Password</label>
+                        <input type="text" id="add-modal-password" placeholder="New password"
+                        class="mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-my-green">
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="city" class="text-sm font-medium">City</label>
+                        <select id="add-modal-city"
+                            class="mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-my-green"
+                            required>
+                            <option value="">-- Choose a city --</option>
+                            <option value="Paris">Paris</option>
+                            <option value="Marseille">Marseille</option>
+                            <option value="Lyon">Lyon</option>
+                            <option value="Toulouse">Toulouse</option>
+                            <option value="Nice">Nice</option>
+                            <option value="Nantes">Nantes</option>
+                            <option value="Strasbourg">Strasbourg</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="role" class="text-sm font-medium">Role</label>
+                        <select id="add-modal-role"
+                        class="mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-my-green"
+                        required>
+                            <option value="">-- Choose a role --</option>
+                            <option value="volunteer">Volunteer</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-evenly items-center">
+                        <button type="submit" id="add-modal-add-btn"
+                        class="flex items-center justify-center gap-2 bg-sky-200 text-sky-800 hover:bg-sky-300 transition px-4 py-2 rounded-lg self-center">
+                        <span class="text-sm font-medium">Add</span>
+                        </button>
+                        <button type="button" id="add-modal-cancel-btn"
+                        class="flex items-center justify-center gap-2 bg-my-black hover:bg-my-black transition text-white px-4 py-2 rounded-lg self-center">
+                        <span class="text-sm font-medium">Cancel</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </dialog>
+    `;
+
+    content.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+function createModalModify() {
+    if (document.querySelector("#modify-modal")) {
+        return;
+    }
+
+    const content = document.querySelector("#content");
+    const modalHTML = `
+        <dialog id="modify-modal" class="rounded-xl backdrop:bg-black/40 p-0 border-none">
+            <div class="card bg-white m-6 p-4 pb-4 shadow-lg flex flex-col gap-4 w-[90vw] max-w-xl">
+                <h2 class="font-bold text-lg text-left">Modify User</h2>
+                <form action="" id="modify-modal-form" class="flex flex-col gap-4">
+                    <div class="flex flex-col">
+                        <label for="first-name" class="text-sm font-medium">First name</label>
+                        <input type="text" id="modify-modal-first-name" placeholder="New first name"
+                        class="mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-my-green">
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="last-name" class="text-sm font-medium">Last name</label>
+                        <input type="text" id="modify-modal-last-name" placeholder="New last name"
+                        class="mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-my-green">
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="city" class="text-sm font-medium">City</label>
+                        <select id="modify-modal-city"
+                            class="mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-my-green"
+                            required>
+                            <option value="">-- Choose a city --</option>
+                            <option value="Paris">Paris</option>
+                            <option value="Marseille">Marseille</option>
+                            <option value="Lyon">Lyon</option>
+                            <option value="Toulouse">Toulouse</option>
+                            <option value="Nice">Nice</option>
+                            <option value="Nantes">Nantes</option>
+                            <option value="Strasbourg">Strasbourg</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="role" class="text-sm font-medium">Role</label>
+                        <select id="modify-modal-role"
+                        class="mt-1 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-my-green"
+                        required>
+                            <option value="">-- Choose a role --</option>
+                            <option value="volunteer">Volunteer</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-evenly items-center">
+                        <button type="submit" id="modify-modal-modify-btn"
+                        class="flex items-center justify-center gap-2 bg-sky-200 text-sky-800 hover:bg-sky-300 transition px-4 py-2 rounded-lg self-center">
+                        <span class="text-sm font-medium">Modify</span>
+                        </button>
+                        <button type="button" id="modify-modal-cancel-btn"
+                        class="flex items-center justify-center gap-2 bg-my-black hover:bg-my-black transition text-white px-4 py-2 rounded-lg self-center">
+                        <span class="text-sm font-medium">Cancel</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </dialog>
+    `;
+
+    content.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+function initAddButton() {
+    const addBtn = document.querySelector(".add-btn");
+    addBtn.addEventListener("click", () => openModalAdd(addBtn));
+}
+
+function openModalAdd(btn) {
+    const addModal = document.querySelector("#add-modal");
+
+    addModal.showModal();
+    setupModalAddButtons();
+}
+
+function closeModalAdd() {
+    const addModal = document.querySelector("#add-modal");
+
+    addModal.close();
+}
+
+function setupModalAddButtons() {
+    const cancelBtn = document.querySelector("#add-modal-cancel-btn");
+    const addBtn = document.querySelector("#add-modal-add-btn");
+
+    cancelBtn.addEventListener("click", () => {
+        closeModalAdd();
+    });
+
+    addBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        handleAddUser();
+    });
+}
+
+async function handleAddUser() {
+    const form = document.querySelector("#add-modal-form");
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const firstName = document.querySelector("#add-modal-first-name").value;
+    const lastName = document.querySelector("#add-modal-last-name").value;
+    const email = document.querySelector("#add-modal-email").value;
+    const password = document.querySelector("#add-modal-password").value;
+    const city = document.querySelector("#add-modal-city").value;
+    const role = document.querySelector("#add-modal-role").value;
+
+    try {
+        const addResponse = await fetch(`http://localhost:8085/api/admin/user`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ firstName: firstName, lastName: lastName, email: email, password: password, city: city, role: role }),
+        });
+        const addData = await addResponse.json();
+
+        if (addData.success) {
+            showCard('admin');
+            closeModalAdd();
+        } else {
+            alert("Failed to add user.");
+        }
+    } catch (error) {
+        console.error("Add error:", error);
+        alert("An error occurred during adding user. Please try again.");
+    }
 }
 
 function initDeleteButtons() {
@@ -275,33 +482,37 @@ async function handleDeleteUser(btn) {
 function initEditButtons() {
     const allEditBtn = document.querySelectorAll(".edit-btn");
     allEditBtn.forEach((btn) => {
-        btn.addEventListener("click", () => openAdminModal(btn));
+        btn.addEventListener("click", () => openModalModify(btn));
     });
 }
 
-function openAdminModal(btn) {
-    adminModal.showModal();
+function openModalModify(btn) {
+    const modifyModal = document.querySelector("#modify-modal");
+
+    modifyModal.showModal();
 
     globalUserId = btn.dataset.userId;
     globalUserFirstName = btn.dataset.userFirstname;
     globalUserLastName = btn.dataset.userLastname;
 
-    document.querySelector("#modal-first-name").value = globalUserFirstName;
-    document.querySelector("#modal-last-name").value = globalUserLastName;
+    document.querySelector("#modify-modal-first-name").value = globalUserFirstName;
+    document.querySelector("#modify-modal-last-name").value = globalUserLastName;
 
-    setupModalButtons();
+    setupModalModifyButtons();
 }
 
-function closeAdminModal() {
-    adminModal.close();
+function closeModalModify() {
+    const modifyModal = document.querySelector("#modify-modal");
+
+    modifyModal.close();
 }
 
-function setupModalButtons() {
-    const cancelBtn = document.querySelector("#cancel-btn");
-    const modifyBtn = document.querySelector("#modify-btn");
+function setupModalModifyButtons() {
+    const cancelBtn = document.querySelector("#modify-modal-cancel-btn");
+    const modifyBtn = document.querySelector("#modify-modal-modify-btn");
 
     cancelBtn.addEventListener("click", () => {
-        closeAdminModal();
+        closeModalModify();
     });
 
     modifyBtn.addEventListener("click", (e) => {
@@ -311,28 +522,28 @@ function setupModalButtons() {
 }
 
 async function handleModifyUser() {
-    const form = document.querySelector("#modal-form");
+    const form = document.querySelector("#modify-modal-form");
     if (!form.checkValidity()) {
         form.reportValidity();
         return;
     }
 
-    const firstName = document.querySelector("#modal-first-name").value;
-    const lastName = document.querySelector("#modal-last-name").value;
-    const city = document.querySelector("#modal-city").value;
-    const role = document.querySelector("#modal-role").value;
+    const firstName = document.querySelector("#modify-modal-first-name").value;
+    const lastName = document.querySelector("#modify-modal-last-name").value;
+    const city = document.querySelector("#modify-modal-city").value;
+    const role = document.querySelector("#modify-modal-role").value;
 
     try {
-        const response = await fetch(`http://localhost:8085/api/admin/user/${globalUserId}`, {
+        const modifyResponse = await fetch(`http://localhost:8085/api/admin/user/${globalUserId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ firstName, lastName, city, role }),
         });
-        const data = await response.json();
+        const modifyData = await modifyResponse.json();
 
-        if (data.success) {
+        if (modifyData.success) {
             showCard('admin');
-            closeAdminModal();
+            closeModalModify();
         } else {
             alert("Failed to modify user.");
         }
@@ -341,7 +552,6 @@ async function handleModifyUser() {
         alert("An error occurred during modifying user. Please try again.");
     }
 }
-
 
 async function getUsersList() {
     try {
