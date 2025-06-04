@@ -255,7 +255,7 @@ function createModalAdd() {
 
     const content = document.querySelector("#content");
     const modalHTML = `
-        <dialog id="add-modal" class="rounded-xl backdrop:bg-black/40 p-0 border-none">
+        <dialog id="add-modal" class="rounded-xl backdrop:backdrop-blur-sm backdrop:bg-black/60 p-0 border-none">
             <div class="card bg-white m-6 p-4 pb-4 shadow-lg flex flex-col gap-4 w-[90vw] max-w-xl">
                 <h2 class="font-bold text-lg text-left">Add User</h2>
                 <form action="" id="add-modal-form" class="flex flex-col gap-4">
@@ -329,7 +329,7 @@ function createModalModify() {
 
     const content = document.querySelector("#content");
     const modalHTML = `
-        <dialog id="modify-modal" class="rounded-xl backdrop:bg-black/40 p-0 border-none">
+        <dialog id="modify-modal" class="rounded-xl backdrop:backdrop-blur-sm backdrop:bg-black/60 p-0 border-none">
             <div class="card bg-white m-6 p-4 pb-4 shadow-lg flex flex-col gap-4 w-[90vw] max-w-xl">
                 <h2 class="font-bold text-lg text-left">Modify User</h2>
                 <form action="" id="modify-modal-form" class="flex flex-col gap-4">
